@@ -7,13 +7,13 @@ import { t, Locale } from '@/lib/i18n'
 
 interface ChatBoxProps {
     data: RegenmonData
-    locale: Locale
+    locale: 'es' | 'en'
     onUpdate: (data: RegenmonData) => void
     isGameOver?: boolean
 }
 
 export function ChatBox({ data, locale, onUpdate, isGameOver }: ChatBoxProps) {
-    const [input, setInput] = useState('')
+    const [inputValue, setInputValue] = useState('')
     const [messages, setMessages] = useState<ChatMessage[]>(data.chatHistory || [])
     const [memories, setMemories] = useState<string[]>(data.memories || [])
     const [isTyping, setIsTyping] = useState(false)
@@ -23,7 +23,7 @@ export function ChatBox({ data, locale, onUpdate, isGameOver }: ChatBoxProps) {
     const s = t(locale)
 
     const isFirstRun = useRef(true)
-    const warningCooldowns = useRef<Record<string, number>>({})
+    const warningCooldowns = useRef<{ [key: string]: number }>({})
 
     // Auto-scroll to bottom (skip on first mount)
     useEffect(() => {
@@ -106,19 +106,19 @@ export function ChatBox({ data, locale, onUpdate, isGameOver }: ChatBoxProps) {
     }, [data.chatHistory, data.memories])
 
     const handleSend = async () => {
-        if (!input.trim() || isTyping || isGameOver) return
+        if (!inputValue.trim() || isTyping || isGameOver) return
 
         const userMsg: ChatMessage = {
             id: Date.now().toString(),
             role: 'user',
-            content: input,
+            content: inputValue,
             timestamp: new Date().toISOString(),
         }
 
         // Optimistic update
         const newHistory = [...messages, userMsg].slice(-20) // Keep last 20
         setMessages(newHistory)
-        setInput('')
+        setInputValue('')
         setIsTyping(true)
 
         // Update stats: +5 Happiness, -3 Energy
@@ -216,11 +216,29 @@ export function ChatBox({ data, locale, onUpdate, isGameOver }: ChatBoxProps) {
     }
 
     return (
-        <div className="nes-container is-rounded w-full max-w-3xl mt-4" style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}>
+        <div
+            className="nes-container is-rounded w-full mt-4"
+            style={{
+                height: '400px',
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor: 'var(--card)',
+                color: 'var(--foreground)'
+            }}
+        >
             {/* Header with Memory Indicator */}
             <div className="flex justify-between items-center mb-4 border-b-2 border-border pb-2">
                 <h3 className="text-sm font-bold">Chat with {data.name}</h3>
-                {/* Memory indicator hidden as requested */}
+                {/* Typing simulator checkbox (for debugging/demo) */}
+                <label className="nes-checkbox-label">
+                    <input
+                        type="checkbox"
+                        className="nes-checkbox"
+                        checked={isTyping}
+                        onChange={(e) => setIsTyping(e.target.checked)}
+                    />
+                    <span className="text-xs">Typing</span>
+                </label>
             </div>
 
             {/* Messages Area */}
@@ -271,8 +289,8 @@ export function ChatBox({ data, locale, onUpdate, isGameOver }: ChatBoxProps) {
             <div className="flex gap-2">
                 <input
                     type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
                     className={`nes-input ${isGameOver ? 'is-error' : 'is-success'}`}
                     placeholder={isGameOver

@@ -247,236 +247,198 @@ export function Dashboard({ locale, data, onUpdate, onReset }: DashboardProps) {
         </div>
       </div>
 
-      {/* Display area with creature sprite */}
-      <div
-        className="nes-container is-rounded scanlines relative mb-4 w-full max-w-3xl overflow-hidden"
-        style={{
-          backgroundColor: archetype.colorDark,
-          borderColor: archetype.color,
-          color: 'var(--foreground)',
-        }}
-      >
-        <div className="flex flex-col items-center gap-2 py-4 sm:py-6" style={{ opacity: isGameOver ? 0.2 : 1, transition: 'opacity 0.5s ease' }}>
-          <p className="text-center text-lg leading-relaxed sm:text-2xl" style={{ color: archetype.color }}>
-            {data.name}
-          </p>
+      {/* Main Layout - Single Column Stack for Focus */}
+      <div className="flex w-full max-w-3xl flex-col gap-4">
 
-          {/* Creature sprite or fallback placeholder - with floating texts */}
-          <div className="relative">
-            <div className="animate-breathe flex flex-col items-center gap-2">
-              {currentSprite ? (
-                <Image
-                  src={currentSprite}
-                  alt={`${data.name} - ${stage} ${mood}`}
-                  width={300}
-                  height={300}
-                  className="h-48 w-48 sm:h-72 sm:w-72"
-                  style={{ imageRendering: 'pixelated' }}
-                  priority
-                />
-              ) : (
-                <div
-                  className="relative flex h-32 w-32 items-center justify-center border-4 sm:h-48 sm:w-48"
+        {/* ITEM 1: Sprite Container */}
+        <div
+          className="nes-container is-rounded scanlines relative w-full overflow-hidden"
+          style={{
+            backgroundColor: archetype.colorDark,
+            borderColor: archetype.color,
+            color: 'var(--foreground)',
+          }}
+        >
+          <div className="flex flex-col items-center gap-2 py-4 sm:py-6" style={{ opacity: isGameOver ? 0.2 : 1, transition: 'opacity 0.5s ease' }}>
+            <p className="text-center text-lg leading-relaxed sm:text-2xl" style={{ color: archetype.color }}>
+              {data.name}
+            </p>
+
+            <div className="relative">
+              <div className="animate-breathe flex flex-col items-center gap-2">
+                {currentSprite ? (
+                  <Image
+                    src={currentSprite}
+                    alt={`${data.name} - ${stage} ${mood}`}
+                    width={300}
+                    height={300}
+                    className="h-48 w-48 sm:h-72 sm:w-72"
+                    style={{ imageRendering: 'pixelated' }}
+                    priority
+                  />
+                ) : (
+                  <div
+                    className="relative flex h-32 w-32 items-center justify-center border-4 sm:h-48 sm:w-48"
+                    style={{
+                      borderColor: archetype.color,
+                      backgroundColor: archetype.colorDark,
+                      imageRendering: 'pixelated',
+                    }}
+                  >
+                    <div
+                      className="h-12 w-12 sm:h-16 sm:w-16"
+                      style={{
+                        backgroundColor: archetype.color,
+                        boxShadow: `0 0 24px ${archetype.color}80`,
+                      }}
+                    />
+                  </div>
+                )}
+                <div className="h-2 w-20 opacity-30 sm:w-24" style={{ backgroundColor: archetype.color, filter: 'blur(4px)' }} />
+              </div>
+
+              {floatingTexts.map((ft) => (
+                <span
+                  key={ft.id}
+                  className="float-up absolute text-2xl font-bold sm:text-3xl"
                   style={{
-                    borderColor: archetype.color,
-                    backgroundColor: archetype.colorDark,
-                    imageRendering: 'pixelated',
+                    color: ft.color,
+                    top: '30%',
+                    left: `calc(50% + ${ft.x}px)`,
+                    transform: 'translateX(-50%)',
+                    textShadow: `0 0 8px ${ft.color}80, 2px 2px 0 #000`,
+                    zIndex: 10,
                   }}
                 >
-                  <div
-                    className="h-12 w-12 sm:h-16 sm:w-16"
-                    style={{
-                      backgroundColor: archetype.color,
-                      boxShadow: `0 0 24px ${archetype.color}80`,
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Shadow */}
-              <div
-                className="h-2 w-20 opacity-30 sm:w-24"
-                style={{
-                  backgroundColor: archetype.color,
-                  filter: 'blur(4px)',
-                }}
-              />
+                  {ft.stat === 'drain' ? '-5' : '+10'}
+                </span>
+              ))}
             </div>
 
-            {/* Floating +10 texts */}
-            {floatingTexts.map((ft) => (
-              <span
-                key={ft.id}
-                className="float-up absolute text-2xl font-bold sm:text-3xl"
-                style={{
-                  color: ft.color,
-                  top: '30%',
-                  left: `calc(50% + ${ft.x}px)`,
-                  transform: 'translateX(-50%)',
-                  textShadow: `0 0 8px ${ft.color}80, 2px 2px 0 #000`,
-                  zIndex: 10,
-                }}
-              >
-                {ft.stat === 'drain' ? '-5' : '+10'}
-              </span>
-            ))}
           </div>
 
-          {/* Mood indicator */}
-          <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-            {mood === 'happy' ? ':)' : ':('}
-          </p>
+          {isGameOver && (
+            <>
+              <style>{`
+                @keyframes gameOverPulse {
+                  0%, 100% { opacity: 1; transform: scale(1); }
+                  50% { opacity: 0.7; transform: scale(1.05); }
+                }
+              `}</style>
+              <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 20 }}>
+                <p style={{ color: '#cd5c5c', fontSize: 'clamp(24px, 6vw, 48px)', fontWeight: 'bold', textAlign: 'center', textShadow: '0 0 20px rgba(205,92,92,0.6), 3px 3px 0 #000', lineHeight: 1.3, margin: 0 }}>
+                  {s.gameOver}
+                </p>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Game Over overlay */}
-        {isGameOver && (
-          <>
-            <style>{`
-              @keyframes gameOverPulse {
-                0%, 100% { opacity: 1; transform: scale(1); }
-                50% { opacity: 0.7; transform: scale(1.05); }
-              }
-            `}</style>
-            <div
-              className="absolute inset-0 flex items-center justify-center"
-              style={{ zIndex: 20 }}
-            >
-              <p
-                style={{
-                  color: '#cd5c5c',
-                  fontSize: 'clamp(24px, 6vw, 48px)',
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                  textShadow: '0 0 20px rgba(205,92,92,0.6), 0 0 40px rgba(205,92,92,0.3), 3px 3px 0 #000',
-                  animation: 'gameOverPulse 2s ease-in-out infinite',
-                  lineHeight: 1.3,
-                  margin: 0,
-                }}
-              >
-                {s.gameOver}
-              </p>
-            </div>
-          </>
-        )}
-      </div>
+        {/* ITEM 2: Chat Box (Placed directly under Sprite) */}
+        <ChatBox data={data} locale={locale} onUpdate={onUpdate} isGameOver={isGameOver} />
 
-      {/* Action buttons */}
-      <div
-        className="nes-container is-rounded mb-4 w-full max-w-3xl"
-        style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)', padding: '16px' }}
-      >
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {/* Small archetype image */}
-          <Image
-            src={archetype.image}
-            alt={archetype.id}
-            width={56}
-            height={56}
-            style={{ imageRendering: 'pixelated', flexShrink: 0 }}
-          />
-          {/* Play button (Happiness) */}
-          <button
-            type="button"
-            className={`nes-btn is-primary hover-lift btn-press ${cooldowns.happiness || data.stats.happiness >= 100 || isGameOver ? 'btn-cooldown' : ''}`}
-            onClick={() => addStat('happiness')}
-            disabled={cooldowns.happiness || data.stats.happiness >= 100 || isGameOver}
-            style={{ fontSize: '11px', padding: '4px 16px', height: '56px', display: 'inline-flex', alignItems: 'center' }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <i
-                className={`nes-icon heart is-small ${data.stats.happiness > 75 ? '' : data.stats.happiness > 25 ? 'is-half' : 'is-empty'
-                  }`}
-              />
-              {s.happiness}
-            </span>
-          </button>
-
-          {/* Rest button (Energy) */}
-          <button
-            type="button"
-            className={`nes-btn is-warning hover-lift btn-press ${cooldowns.energy || data.stats.energy >= 100 || isGameOver ? 'btn-cooldown' : ''}`}
-            onClick={() => addStat('energy')}
-            disabled={cooldowns.energy || data.stats.energy >= 100 || isGameOver}
-            style={{ fontSize: '11px', padding: '4px 16px', height: '56px', display: 'inline-flex', alignItems: 'center' }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <i
-                className={`nes-icon star is-small ${data.stats.energy > 75 ? '' : data.stats.energy > 25 ? 'is-half' : 'is-empty'
-                  }`}
-              />
-              {s.energy}
-            </span>
-          </button>
-
-          {/* Feed button (Hunger) */}
-          <button
-            type="button"
-            className={`nes-btn is-success hover-lift btn-press ${cooldowns.hunger || data.stats.hunger >= 100 || isGameOver ? 'btn-cooldown' : ''}`}
-            onClick={() => addStat('hunger')}
-            disabled={cooldowns.hunger || data.stats.hunger >= 100 || isGameOver}
-            style={{ fontSize: '11px', padding: '4px 16px', height: '56px', display: 'inline-flex', alignItems: 'center' }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <i
-                className={`nes-icon like is-small ${data.stats.hunger > 50 ? '' : 'is-empty'
-                  }`}
-              />
-              {s.hunger}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* Stats panel */}
-      <div
-        className="nes-container is-rounded w-full max-w-3xl"
-        style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
-      >
-        <h2
-          className="mb-5 text-center text-sm leading-relaxed sm:text-base"
-          style={{ color: 'var(--foreground)' }}
+        {/* ITEM 3: Action Buttons */}
+        <div
+          className="nes-container is-rounded w-full"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)', padding: '16px' }}
         >
-          {s.statsTitle}
-        </h2>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Image
+              src={archetype.image}
+              alt={archetype.id}
+              width={56}
+              height={56}
+              style={{ imageRendering: 'pixelated', flexShrink: 0 }}
+            />
+            {/* Play button (Happiness) */}
+            <button
+              type="button"
+              className={`nes-btn is-primary hover-lift btn-press ${cooldowns.happiness || data.stats.happiness >= 100 || isGameOver ? 'btn-cooldown' : ''}`}
+              onClick={() => addStat('happiness')}
+              disabled={cooldowns.happiness || data.stats.happiness >= 100 || isGameOver}
+              style={{ fontSize: '11px', padding: '4px 16px', height: '56px', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <i className={`nes-icon heart is-small ${data.stats.happiness > 75 ? '' : data.stats.happiness > 25 ? 'is-half' : 'is-empty'}`} />
+                {s.happiness}
+              </span>
+            </button>
 
-        <div className="flex flex-col gap-5">
-          {/* Happiness */}
-          <div>
-            <label className="mb-2 block text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
-              {s.happiness}
-            </label>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-              <progress className="nes-progress is-primary" value={data.stats.happiness} max={100} style={{ flex: 1 }} />
-              <span className={`transition-all duration-300 ${poppedStat === 'happiness' ? 'animate-stat-pop' : ''}`} style={{ color: poppedStat === 'happiness' ? STAT_COLORS.happiness : 'var(--muted-foreground)', fontSize: '12px', fontWeight: 'bold', minWidth: '40px', textAlign: 'right' }}>{data.stats.happiness}%</span>
-            </div>
+            {/* Rest button (Energy) */}
+            <button
+              type="button"
+              className={`nes-btn is-warning hover-lift btn-press ${cooldowns.energy || data.stats.energy >= 100 || isGameOver ? 'btn-cooldown' : ''}`}
+              onClick={() => addStat('energy')}
+              disabled={cooldowns.energy || data.stats.energy >= 100 || isGameOver}
+              style={{ fontSize: '11px', padding: '4px 16px', height: '56px', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <i className={`nes-icon star is-small ${data.stats.energy > 75 ? '' : data.stats.energy > 25 ? 'is-half' : 'is-empty'}`} />
+                {s.energy}
+              </span>
+            </button>
+
+            {/* Feed button (Hunger) */}
+            <button
+              type="button"
+              className={`nes-btn is-success hover-lift btn-press ${cooldowns.hunger || data.stats.hunger >= 100 || isGameOver ? 'btn-cooldown' : ''}`}
+              onClick={() => addStat('hunger')}
+              disabled={cooldowns.hunger || data.stats.hunger >= 100 || isGameOver}
+              style={{ fontSize: '11px', padding: '4px 16px', height: '56px', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <i className={`nes-icon like is-small ${data.stats.hunger > 50 ? '' : 'is-empty'}`} />
+                {s.hunger}
+              </span>
+            </button>
           </div>
+        </div>
 
-          {/* Energy */}
-          <div>
-            <label className="mb-2 block text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
-              {s.energy}
-            </label>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-              <progress className="nes-progress is-warning" value={data.stats.energy} max={100} style={{ flex: 1 }} />
-              <span className={`transition-all duration-300 ${poppedStat === 'energy' ? 'animate-stat-pop' : ''}`} style={{ color: poppedStat === 'energy' ? STAT_COLORS.energy : 'var(--muted-foreground)', fontSize: '12px', fontWeight: 'bold', minWidth: '40px', textAlign: 'right' }}>{data.stats.energy}%</span>
+        {/* ITEM 4: Stats Panel */}
+        <div
+          className="nes-container is-rounded w-full"
+          style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+        >
+          <h2 className="mb-5 text-center text-sm leading-relaxed sm:text-base" style={{ color: 'var(--foreground)' }}>
+            {s.statsTitle}
+          </h2>
+
+          <div className="flex flex-col gap-5">
+            {/* Happiness Bar */}
+            <div>
+              <label className="mb-2 block text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
+                {s.happiness}
+              </label>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                <progress className="nes-progress is-primary" value={data.stats.happiness} max={100} style={{ flex: 1 }} />
+                <span className={`transition-all duration-300 ${poppedStat === 'happiness' ? 'animate-stat-pop' : ''}`} style={{ color: poppedStat === 'happiness' ? STAT_COLORS.happiness : 'var(--muted-foreground)', fontSize: '12px', fontWeight: 'bold', minWidth: '40px', textAlign: 'right' }}>{data.stats.happiness}%</span>
+              </div>
             </div>
-          </div>
 
-          {/* Satiety */}
-          <div>
-            <label className="mb-2 block text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
-              {s.hunger}
-            </label>
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-              <progress className="nes-progress is-success" value={data.stats.hunger} max={100} style={{ flex: 1 }} />
-              <span className={`transition-all duration-300 ${poppedStat === 'hunger' ? 'animate-stat-pop' : ''}`} style={{ color: poppedStat === 'hunger' ? STAT_COLORS.hunger : 'var(--muted-foreground)', fontSize: '12px', fontWeight: 'bold', minWidth: '40px', textAlign: 'right' }}>{data.stats.hunger}%</span>
+            {/* Energy Bar */}
+            <div>
+              <label className="mb-2 block text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
+                {s.energy}
+              </label>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                <progress className="nes-progress is-warning" value={data.stats.energy} max={100} style={{ flex: 1 }} />
+                <span className={`transition-all duration-300 ${poppedStat === 'energy' ? 'animate-stat-pop' : ''}`} style={{ color: poppedStat === 'energy' ? STAT_COLORS.energy : 'var(--muted-foreground)', fontSize: '12px', fontWeight: 'bold', minWidth: '40px', textAlign: 'right' }}>{data.stats.energy}%</span>
+              </div>
+            </div>
+
+            {/* Hunger Bar */}
+            <div>
+              <label className="mb-2 block text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
+                {s.hunger}
+              </label>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+                <progress className="nes-progress is-success" value={data.stats.hunger} max={100} style={{ flex: 1 }} />
+                <span className={`transition-all duration-300 ${poppedStat === 'hunger' ? 'animate-stat-pop' : ''}`} style={{ color: poppedStat === 'hunger' ? STAT_COLORS.hunger : 'var(--muted-foreground)', fontSize: '12px', fontWeight: 'bold', minWidth: '40px', textAlign: 'right' }}>{data.stats.hunger}%</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Chat Box */}
-      <ChatBox data={data} locale={locale} onUpdate={onUpdate} isGameOver={isGameOver} />
     </div>
   )
 }
