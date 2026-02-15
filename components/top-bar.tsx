@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import type { Locale } from '@/lib/i18n'
 import { t } from '@/lib/i18n'
@@ -10,46 +11,121 @@ interface TopBarProps {
   locale: Locale
   onToggleTheme: () => void
   onToggleLang: () => void
+  archetypeInfo?: string
+  onReset?: () => void
 }
 
-export function TopBar({ isDark, locale, onToggleTheme, onToggleLang }: TopBarProps) {
+export function TopBar({
+  isDark,
+  locale,
+  onToggleTheme,
+  onToggleLang,
+  archetypeInfo,
+  onReset
+}: TopBarProps) {
   const s = t(locale)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   return (
-    <header
-      className="sticky top-0 z-40 flex items-center justify-end border-b-2 border-border px-3 py-1.5 sm:px-5"
-      style={{ backgroundColor: 'var(--card)' }}
-    >
-      <div className="flex items-center gap-2">
-        {/* Language toggle */}
-        <button
-          type="button"
-          onClick={onToggleLang}
-          className="nes-btn btn-press"
-          style={{ fontSize: '9px', padding: '3px 10px' }}
-          aria-label={locale === 'en' ? 'Cambiar a Espanol' : 'Switch to English'}
-        >
-          {locale === 'en' ? 'ES' : 'EN'}
-        </button>
+    <>
+      {/* Only override NES.css margin on buttons inside the header */}
+      <style>{`
+        .topbar-header .nes-btn { margin: 0 !important; }
+        .topbar-header p { margin: 0 !important; }
+      `}</style>
 
-        {/* Theme toggle */}
-        <button
-          type="button"
-          onClick={onToggleTheme}
-          className="nes-btn btn-press flex items-center"
-          style={{ fontSize: '9px', padding: '3px 8px' }}
-          aria-label={isDark ? s.lightTheme : s.darkTheme}
-        >
-          {isDark ? (
-            <Sun className="h-3.5 w-3.5" />
-          ) : (
-            <Moon className="h-3.5 w-3.5" />
+      <header
+        className="topbar-header sticky top-0 z-40 border-b-2 border-border"
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          padding: '8px 12px',
+          gap: '12px',
+          backgroundColor: 'var(--card)',
+        }}
+      >
+        {/* Left: Toggles - inline flex for layout only */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          <button
+            type="button"
+            onClick={onToggleLang}
+            className="nes-btn"
+            style={{ fontSize: '10px' }}
+          >
+            {locale === 'en' ? 'ES' : 'EN'}
+          </button>
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            className="nes-btn"
+            style={{ fontSize: '10px' }}
+          >
+            {isDark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+          </button>
+          <RegenmonTheme />
+        </div>
+
+        {/* Center: Archetype Info */}
+        <div style={{ display: 'flex', flex: '1 1 0%', minWidth: 0, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '0 8px' }}>
+          {archetypeInfo && (
+            <p
+              style={{
+                color: 'var(--foreground)',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                textTransform: 'uppercase',
+                maxWidth: '100%',
+                margin: 0,
+              }}
+            >
+              {archetypeInfo}
+            </p>
           )}
-        </button>
+        </div>
 
-        {/* Music toggle */}
-        <RegenmonTheme />
-      </div>
-    </header>
+        {/* Right: Reset Button */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0 }}>
+          {onReset && (
+            <button
+              type="button"
+              className="nes-btn is-error"
+              onClick={() => setShowConfirm(true)}
+              style={{ fontSize: '10px' }}
+            >
+              {s.resetButton}
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Confirm Reset Dialog */}
+      {showConfirm && onReset && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+          <div
+            className="nes-container is-rounded w-full max-w-md"
+            style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+          >
+            <p className="mb-6 text-center text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
+              {s.confirmReset}
+            </p>
+            <div className="flex justify-center gap-4">
+              <button type="button" className="nes-btn is-error" onClick={() => { setShowConfirm(false); onReset() }} style={{ fontSize: '12px' }}>
+                {s.yes}
+              </button>
+              <button type="button" className="nes-btn" onClick={() => setShowConfirm(false)} style={{ fontSize: '12px' }}>
+                {s.no}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

@@ -4,24 +4,32 @@ import { useState, useEffect } from 'react'
 import { Incubator } from '@/components/incubator'
 import { Dashboard } from '@/components/dashboard'
 import { TopBar } from '@/components/top-bar'
+import { MusicProvider } from '@/components/music-provider'
+import { StartScreen } from '@/components/start-screen'
+import { LoadingScreen } from '@/components/loading-screen'
 import type { RegenmonData } from '@/lib/regenmon-types'
+import { ARCHETYPES } from '@/lib/regenmon-types'
 import type { Locale } from '@/lib/i18n'
 import { LANG_KEY } from '@/lib/i18n'
 
 const STORAGE_KEY = 'regenmon-data'
 const THEME_KEY = 'regenmon-theme'
 
-export default function Home() {
+function GameContent() {
   const [regenmon, setRegenmon] = useState<RegenmonData | null>(null)
   const [isDark, setIsDark] = useState(true)
   const [locale, setLocale] = useState<Locale>('en')
   const [mounted, setMounted] = useState(false)
+
+  // New States for Flow
+  const [gameState, setGameState] = useState<'START' | 'LOADING' | 'GAME'>('START')
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) {
       try {
         setRegenmon(JSON.parse(saved))
+        setGameState('GAME')
       } catch {
         localStorage.removeItem(STORAGE_KEY)
       }
@@ -84,29 +92,70 @@ export default function Home() {
     setLocale((prev) => (prev === 'en' ? 'es' : 'en'))
   }
 
+  function handleStart() {
+    setGameState('LOADING')
+  }
+
+  function handleLoaded() {
+    setGameState('GAME')
+  }
+
+  const currentArchetype = regenmon ? ARCHETYPES.find((a) => a.id === regenmon.type) : null
+  const archetypeInfo = currentArchetype
+    ? `${currentArchetype.getName(locale)} — "${currentArchetype.getLabel(locale)}"`
+    : undefined
+
   if (!mounted) {
     return (
       <main className="flex min-h-screen items-center justify-center font-sans">
-        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Loading...</p>
+        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Loading resources...</p>
       </main>
     )
   }
 
   return (
     <div className="min-h-screen font-sans">
-      <TopBar
-        isDark={isDark}
-        locale={locale}
-        onToggleTheme={toggleTheme}
-        onToggleLang={toggleLang}
-      />
-      <main>
-        {regenmon ? (
-          <Dashboard locale={locale} data={regenmon} onUpdate={handleUpdate} onReset={handleReset} />
-        ) : (
-          <Incubator locale={locale} onHatch={handleHatch} />
-        )}
-      </main>
+      {gameState === 'START' && (
+        <StartScreen
+          onStart={handleStart}
+          isDark={isDark}
+          toggleTheme={toggleTheme}
+          locale={locale}
+          toggleLang={toggleLang}
+        />
+      )}
+
+      {gameState === 'LOADING' && (
+        <LoadingScreen onLoaded={handleLoaded} locale={locale} />
+      )}
+
+      {gameState === 'GAME' && (
+        <div className="flex flex-col" style={{ height: '100dvh' }}>
+          <TopBar
+            isDark={isDark}
+            locale={locale}
+            onToggleTheme={toggleTheme}
+            onToggleLang={toggleLang}
+            archetypeInfo={archetypeInfo}
+            onReset={regenmon ? handleReset : undefined}
+          />
+          <main style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
+            {regenmon ? (
+              <Dashboard locale={locale} data={regenmon} onUpdate={handleUpdate} onReset={handleReset} />
+            ) : (
+              <Incubator locale={locale} onHatch={handleHatch} />
+            )}
+          </main>
+        </div>
+      )}
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <MusicProvider>
+      <GameContent />
+    </MusicProvider>
   )
 }

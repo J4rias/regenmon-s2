@@ -47,6 +47,7 @@ const strings = {
     feedButton: 'Feed',
     playButton: 'Play',
     restButton: 'Rest',
+    gameOver: 'GAME OVER',
   },
   es: {
     title: 'Regenmon',
@@ -56,7 +57,7 @@ const strings = {
     createTitle: 'Crea tu Regenmon',
     nameLabel: 'Nombre (2-15 caracteres):',
     namePlaceholder: 'Escribe un nombre...',
-    nameMinError: 'Minimo 2 caracteres',
+    nameMinError: 'Mínimo 2 caracteres',
     selectArchetype: 'Selecciona un Arquetipo:',
     hatchButton: 'Eclosionar!',
     // Archetypes
@@ -92,6 +93,7 @@ const strings = {
     feedButton: 'Alimentar',
     playButton: 'Jugar',
     restButton: 'Descansar',
+    gameOver: 'FIN DEL JUEGO',
   },
 } as const
 

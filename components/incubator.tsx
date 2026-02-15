@@ -38,7 +38,11 @@ export function Incubator({ locale, onHatch }: IncubatorProps) {
       const data: RegenmonData = {
         name: trimmed,
         type: selectedType,
-        stats: { happiness: 50, energy: 50, hunger: 50 },
+        stats: {
+          happiness: Math.floor(Math.random() * 50) + 25,
+          energy: Math.floor(Math.random() * 50) + 25,
+          hunger: Math.floor(Math.random() * 50) + 25,
+        },
         createdAt: new Date().toISOString(),
       }
       onHatch(data)
@@ -46,14 +50,14 @@ export function Incubator({ locale, onHatch }: IncubatorProps) {
   }
 
   return (
-    <div className={`flex min-h-[calc(100vh-36px)] flex-col items-center justify-center px-3 py-4 sm:px-6 sm:py-6 transition-opacity duration-500 ${isHatching ? 'opacity-0 scale-95' : 'opacity-100'}`}>
+    <div className={`flex h-full flex-col items-center px-3 py-4 sm:px-6 sm:py-6 transition-opacity duration-500 ${isHatching ? 'opacity-0 scale-95' : 'opacity-100'}`} style={{ justifyContent: 'flex-start' }}>
       <div
         className="nes-container is-rounded w-full max-w-3xl animate-fade-in"
         style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)', padding: '1rem 1.25rem' }}
       >
         {/* Title */}
         <h2
-          className="mb-1 text-center text-base leading-relaxed sm:text-xl"
+          className="mb-1 text-center text-xl leading-relaxed sm:text-3xl"
           style={{ color: '#d4a017' }}
         >
           {s.createTitle}
@@ -81,12 +85,13 @@ export function Incubator({ locale, onHatch }: IncubatorProps) {
             placeholder={s.namePlaceholder}
             value={name}
             maxLength={15}
+            autoComplete="off"
             onChange={(e) => setName(e.target.value)}
             style={{
               backgroundColor: 'var(--secondary)',
               color: 'var(--foreground)',
-              fontSize: '14px',
-              padding: '10px 12px',
+              fontSize: '18px',
+              padding: '13px 15px',
             }}
           />
           <div className="mt-2 flex items-center justify-between">

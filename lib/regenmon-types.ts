@@ -27,6 +27,7 @@ export interface RegenmonData {
   type: ArchetypeId
   stats: RegenmonStats
   createdAt: string
+  evolutionBonus?: number // accumulated time bonus/penalty in ms
 }
 
 // Sprite image map: archetypeId -> stage -> mood -> image path
