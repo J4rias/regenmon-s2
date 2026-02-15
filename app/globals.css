@@ -85,12 +85,41 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-size: 16px;
+  }
   body {
     @apply bg-background text-foreground;
+    font-size: 14px;
+    line-height: 1.6;
   }
 }
 
-/* NES.css overrides for theme */
+/* NES.css global font size bump */
+.nes-container {
+  padding: 1.5rem;
+}
+
+.nes-container.is-rounded {
+  border-image-slice: 3;
+}
+
+.nes-btn {
+  font-size: 12px;
+  padding: 6px 16px;
+}
+
+.nes-progress {
+  height: 28px;
+}
+
+/* Light theme NES overrides */
+:root .nes-container {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+/* NES.css overrides for dark theme */
 .dark .nes-container {
   background-color: #222222;
   color: #e0e0e0;

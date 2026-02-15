@@ -1,13 +1,15 @@
+import type { Locale } from './i18n'
+import { t } from './i18n'
+
 export type ArchetypeId = 'Scrap-Eye' | 'Spore-Maw' | 'Prism-Core'
 
 export interface Archetype {
   id: ArchetypeId
-  name: string
-  label: string
-  icon: string
   color: string
   colorDark: string
-  description: string
+  getName: (locale: Locale) => string
+  getLabel: (locale: Locale) => string
+  getDescription: (locale: Locale) => string
 }
 
 export interface RegenmonStats {
@@ -26,29 +28,26 @@ export interface RegenmonData {
 export const ARCHETYPES: Archetype[] = [
   {
     id: 'Scrap-Eye',
-    name: 'Industrial',
-    label: 'Ojo de Chatarra',
-    icon: '\u2699\uFE0F',
     color: '#cd5c5c',
     colorDark: 'rgba(205, 92, 92, 0.15)',
-    description: 'Forjado con restos de la vieja civilizacion.',
+    getName: (l) => t(l).archIndustrialName,
+    getLabel: (l) => t(l).archIndustrialLabel,
+    getDescription: (l) => t(l).archIndustrialDesc,
   },
   {
     id: 'Spore-Maw',
-    name: 'Fungi',
-    label: 'Fauces de Espora',
-    icon: '\uD83C\uDF44',
     color: '#76c442',
     colorDark: 'rgba(118, 196, 66, 0.15)',
-    description: 'Nacido de la mutacion organica del yermo.',
+    getName: (l) => t(l).archFungiName,
+    getLabel: (l) => t(l).archFungiLabel,
+    getDescription: (l) => t(l).archFungiDesc,
   },
   {
     id: 'Prism-Core',
-    name: 'Mineral',
-    label: 'Nucleo de Prisma',
-    icon: '\uD83D\uDC8E',
     color: '#67e6dc',
     colorDark: 'rgba(103, 230, 220, 0.15)',
-    description: 'Cristalizado por la radiacion residual.',
+    getName: (l) => t(l).archMineralName,
+    getLabel: (l) => t(l).archMineralLabel,
+    getDescription: (l) => t(l).archMineralDesc,
   },
 ]

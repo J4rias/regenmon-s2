@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import { Incubator } from '@/components/incubator'
 import { Dashboard } from '@/components/dashboard'
-import { ThemeToggle } from '@/components/theme-toggle'
+import { TopBar } from '@/components/top-bar'
 import type { RegenmonData } from '@/lib/regenmon-types'
+import type { Locale } from '@/lib/i18n'
+import { LANG_KEY } from '@/lib/i18n'
 
 const STORAGE_KEY = 'regenmon-data'
 const THEME_KEY = 'regenmon-theme'
@@ -12,9 +14,9 @@ const THEME_KEY = 'regenmon-theme'
 export default function Home() {
   const [regenmon, setRegenmon] = useState<RegenmonData | null>(null)
   const [isDark, setIsDark] = useState(true)
+  const [locale, setLocale] = useState<Locale>('en')
   const [mounted, setMounted] = useState(false)
 
-  // Load saved data and theme on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) {
@@ -32,10 +34,16 @@ export default function Home() {
       setIsDark(true)
     }
 
+    const savedLang = localStorage.getItem(LANG_KEY)
+    if (savedLang === 'es') {
+      setLocale('es')
+    } else {
+      setLocale('en')
+    }
+
     setMounted(true)
   }, [])
 
-  // Apply dark class to html
   useEffect(() => {
     if (!mounted) return
     const html = document.documentElement
@@ -46,6 +54,12 @@ export default function Home() {
     }
     localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light')
   }, [isDark, mounted])
+
+  useEffect(() => {
+    if (!mounted) return
+    document.documentElement.lang = locale
+    localStorage.setItem(LANG_KEY, locale)
+  }, [locale, mounted])
 
   function handleHatch(data: RegenmonData) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
@@ -61,22 +75,33 @@ export default function Home() {
     setIsDark((prev) => !prev)
   }
 
+  function toggleLang() {
+    setLocale((prev) => (prev === 'en' ? 'es' : 'en'))
+  }
+
   if (!mounted) {
     return (
       <main className="flex min-h-screen items-center justify-center font-sans">
-        <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Cargando...</p>
+        <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Loading...</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen font-sans">
-      <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
-      {regenmon ? (
-        <Dashboard data={regenmon} onReset={handleReset} />
-      ) : (
-        <Incubator onHatch={handleHatch} />
-      )}
-    </main>
+    <div className="min-h-screen font-sans">
+      <TopBar
+        isDark={isDark}
+        locale={locale}
+        onToggleTheme={toggleTheme}
+        onToggleLang={toggleLang}
+      />
+      <main>
+        {regenmon ? (
+          <Dashboard locale={locale} data={regenmon} onReset={handleReset} />
+        ) : (
+          <Incubator locale={locale} onHatch={handleHatch} />
+        )}
+      </main>
+    </div>
   )
 }

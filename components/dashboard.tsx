@@ -2,15 +2,19 @@
 
 import { useState } from 'react'
 import { ARCHETYPES, type RegenmonData } from '@/lib/regenmon-types'
+import type { Locale } from '@/lib/i18n'
+import { t } from '@/lib/i18n'
 
 interface DashboardProps {
+  locale: Locale
   data: RegenmonData
   onReset: () => void
 }
 
-export function Dashboard({ data, onReset }: DashboardProps) {
+export function Dashboard({ locale, data, onReset }: DashboardProps) {
   const [showConfirm, setShowConfirm] = useState(false)
   const archetype = ARCHETYPES.find((a) => a.id === data.type)!
+  const s = t(locale)
 
   function handleReset() {
     setShowConfirm(true)
@@ -22,49 +26,45 @@ export function Dashboard({ data, onReset }: DashboardProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center px-4 py-8">
-      {/* Header */}
-      <div className="mb-6 flex w-full max-w-2xl items-center justify-between">
-        <h1 className="text-sm sm:text-base" style={{ color: 'var(--foreground)' }}>
-          Regenmon
-        </h1>
+    <div className="flex min-h-[calc(100vh-60px)] flex-col items-center px-4 py-8 sm:px-6 sm:py-10">
+      {/* Sub-header with reset */}
+      <div className="mb-6 flex w-full max-w-3xl items-center justify-between">
+        <div>
+          <p className="text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--muted-foreground)' }}>
+            {archetype.getName(locale)} &mdash; {`"${archetype.getLabel(locale)}"`}
+          </p>
+        </div>
         <button
           type="button"
           className="nes-btn is-error"
           onClick={handleReset}
-          style={{ fontSize: '10px' }}
+          style={{ fontSize: '12px', padding: '4px 14px' }}
         >
-          Reiniciar
+          {s.resetButton}
         </button>
       </div>
 
       {/* Display area */}
       <div
-        className="nes-container is-rounded scanlines relative mb-6 w-full max-w-2xl overflow-hidden"
+        className="nes-container is-rounded scanlines relative mb-8 w-full max-w-3xl overflow-hidden"
         style={{
           backgroundColor: archetype.colorDark,
           borderColor: archetype.color,
           color: 'var(--foreground)',
         }}
       >
-        <div className="flex flex-col items-center gap-4 py-6">
-          <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
-            {archetype.name} - {`"${archetype.label}"`}
-          </p>
-          <p className="text-center text-sm sm:text-lg" style={{ color: archetype.color }}>
+        <div className="flex flex-col items-center gap-5 py-8 sm:py-10">
+          <p className="text-center text-lg leading-relaxed sm:text-2xl" style={{ color: archetype.color }}>
             {data.name}
           </p>
 
           {/* Placeholder object simulating character position and effects */}
-          <div className="animate-breathe flex flex-col items-center gap-2">
-            {/* Main body - pixelated placeholder */}
+          <div className="animate-breathe flex flex-col items-center gap-3">
+            {/* Main body */}
             <div
-              className="relative flex h-24 w-24 items-center justify-center sm:h-32 sm:w-32"
-              style={{
-                imageRendering: 'pixelated',
-              }}
+              className="relative flex h-28 w-28 items-center justify-center sm:h-36 sm:w-36"
+              style={{ imageRendering: 'pixelated' }}
             >
-              {/* Outer shell */}
               <div
                 className="absolute inset-0 border-4"
                 style={{
@@ -72,28 +72,26 @@ export function Dashboard({ data, onReset }: DashboardProps) {
                   backgroundColor: archetype.colorDark,
                 }}
               />
-              {/* Inner core */}
               <div
-                className="relative z-10 h-10 w-10 sm:h-14 sm:w-14"
+                className="relative z-10 h-12 w-12 sm:h-16 sm:w-16"
                 style={{
                   backgroundColor: archetype.color,
-                  boxShadow: `0 0 20px ${archetype.color}80, 0 0 40px ${archetype.color}40`,
+                  boxShadow: `0 0 24px ${archetype.color}80, 0 0 48px ${archetype.color}40`,
                 }}
               />
-              {/* Eye detail */}
               <div
-                className="absolute top-3 left-3 z-20 h-3 w-3 sm:h-4 sm:w-4"
+                className="absolute top-4 left-4 z-20 h-3 w-3 sm:h-4 sm:w-4"
                 style={{ backgroundColor: 'var(--foreground)' }}
               />
               <div
-                className="absolute top-3 right-3 z-20 h-3 w-3 sm:h-4 sm:w-4"
+                className="absolute top-4 right-4 z-20 h-3 w-3 sm:h-4 sm:w-4"
                 style={{ backgroundColor: 'var(--foreground)' }}
               />
             </div>
 
             {/* Shadow */}
             <div
-              className="h-2 w-16 animate-float opacity-30 sm:w-20"
+              className="h-2 w-20 animate-float opacity-30 sm:w-24"
               style={{
                 backgroundColor: archetype.color,
                 filter: 'blur(4px)',
@@ -102,11 +100,11 @@ export function Dashboard({ data, onReset }: DashboardProps) {
           </div>
 
           {/* Particles effect */}
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="animate-float h-2 w-2"
+                className="animate-float h-2.5 w-2.5"
                 style={{
                   backgroundColor: archetype.color,
                   animationDelay: `${i * 0.5}s`,
@@ -120,19 +118,22 @@ export function Dashboard({ data, onReset }: DashboardProps) {
 
       {/* Stats panel */}
       <div
-        className="nes-container is-rounded w-full max-w-2xl"
+        className="nes-container is-rounded w-full max-w-3xl"
         style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
       >
-        <h2 className="mb-4 text-center text-xs" style={{ color: 'var(--foreground)' }}>
-          Estadisticas
+        <h2
+          className="mb-6 text-center text-sm leading-relaxed sm:text-base"
+          style={{ color: 'var(--foreground)' }}
+        >
+          {s.statsTitle}
         </h2>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           {/* Happiness */}
           <div>
-            <label className="mb-1 flex items-center gap-2 text-xs" style={{ color: 'var(--foreground)' }}>
-              <span>Felicidad</span>
-              <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+            <label className="mb-2 flex items-center justify-between text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
+              <span>{s.happiness}</span>
+              <span style={{ color: 'var(--muted-foreground)' }}>
                 {data.stats.happiness}/100
               </span>
             </label>
@@ -145,9 +146,9 @@ export function Dashboard({ data, onReset }: DashboardProps) {
 
           {/* Energy */}
           <div>
-            <label className="mb-1 flex items-center gap-2 text-xs" style={{ color: 'var(--foreground)' }}>
-              <span>Energia</span>
-              <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+            <label className="mb-2 flex items-center justify-between text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
+              <span>{s.energy}</span>
+              <span style={{ color: 'var(--muted-foreground)' }}>
                 {data.stats.energy}/100
               </span>
             </label>
@@ -160,9 +161,9 @@ export function Dashboard({ data, onReset }: DashboardProps) {
 
           {/* Hunger */}
           <div>
-            <label className="mb-1 flex items-center gap-2 text-xs" style={{ color: 'var(--foreground)' }}>
-              <span>Saciedad</span>
-              <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+            <label className="mb-2 flex items-center justify-between text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
+              <span>{s.hunger}</span>
+              <span style={{ color: 'var(--muted-foreground)' }}>
                 {data.stats.hunger}/100
               </span>
             </label>
@@ -182,23 +183,25 @@ export function Dashboard({ data, onReset }: DashboardProps) {
             className="nes-container is-rounded w-full max-w-md"
             style={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
           >
-            <p className="mb-6 text-center text-xs leading-relaxed" style={{ color: 'var(--foreground)' }}>
-              Seguro que quieres abandonar a tu Regenmon?
+            <p className="mb-6 text-center text-xs leading-relaxed sm:text-sm" style={{ color: 'var(--foreground)' }}>
+              {s.confirmReset}
             </p>
             <div className="flex justify-center gap-4">
               <button
                 type="button"
                 className="nes-btn is-error"
                 onClick={confirmReset}
+                style={{ fontSize: '12px' }}
               >
-                Si
+                {s.yes}
               </button>
               <button
                 type="button"
                 className="nes-btn"
                 onClick={() => setShowConfirm(false)}
+                style={{ fontSize: '12px' }}
               >
-                No
+                {s.no}
               </button>
             </div>
           </div>

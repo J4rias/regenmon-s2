@@ -10,8 +10,8 @@ const pressStart2P = Press_Start_2P({
 })
 
 export const metadata: Metadata = {
-  title: 'Regenmon - Mascota Virtual Post-Apocaliptica',
-  description: 'Cria a tu Regenmon, una mascota virtual en un mundo post-apocaliptico estilo retro 8-bit.',
+  title: 'Regenmon - Post-Apocalyptic Virtual Pet',
+  description: 'Raise your Regenmon, a virtual pet in a retro 8-bit post-apocalyptic wasteland.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -44,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link
           href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css"
