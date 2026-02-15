@@ -3,6 +3,7 @@
 import { Sun, Moon } from 'lucide-react'
 import type { Locale } from '@/lib/i18n'
 import { t } from '@/lib/i18n'
+import { RegenmonTheme } from '@/components/regenmon-theme'
 
 interface TopBarProps {
   isDark: boolean
@@ -45,6 +46,9 @@ export function TopBar({ isDark, locale, onToggleTheme, onToggleLang }: TopBarPr
             <Moon className="h-3.5 w-3.5" />
           )}
         </button>
+
+        {/* Music toggle */}
+        <RegenmonTheme />
       </div>
     </header>
   )
