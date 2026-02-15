@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { ARCHETYPES, type ArchetypeId, type RegenmonData } from '@/lib/regenmon-types'
 import type { Locale } from '@/lib/i18n'
 import { t } from '@/lib/i18n'
@@ -102,18 +103,15 @@ export function Incubator({ locale, onHatch }: IncubatorProps) {
                   }}
                 >
                   <div className="flex flex-col items-center gap-3">
-                    {/* Placeholder object */}
-                    <div
-                      className="flex h-20 w-20 items-center justify-center border-4"
-                      style={{
-                        borderColor: arch.color,
-                        backgroundColor: arch.colorDark,
-                        imageRendering: 'pixelated',
-                      }}
-                    >
-                      <div
-                        className="h-8 w-8"
-                        style={{ backgroundColor: arch.color }}
+                    {/* Archetype illustration */}
+                    <div className="relative h-24 w-24 sm:h-28 sm:w-28">
+                      <Image
+                        src={arch.image}
+                        alt={arch.getName(locale)}
+                        fill
+                        className="object-contain"
+                        style={{ imageRendering: 'pixelated' }}
+                        unoptimized
                       />
                     </div>
                     <span className="text-sm font-bold sm:text-base" style={{ color: arch.color }}>
