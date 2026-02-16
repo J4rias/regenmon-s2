@@ -50,6 +50,23 @@ export default function RootLayout({
           href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css"
           rel="stylesheet"
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (typeof window !== 'undefined' && !window.ethereum) {
+                try {
+                  Object.defineProperty(window, 'ethereum', {
+                    value: undefined,
+                    writable: true,
+                    configurable: true,
+                  });
+                } catch (e) {
+                  // Silently ignore if property cannot be redefined
+                }
+              }
+            `,
+          }}
+        />
       </head>
       <body className={`${pressStart2P.variable} font-sans antialiased`}>
         {children}
